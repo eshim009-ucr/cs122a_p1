@@ -7,29 +7,41 @@
 const uint8_t PIN_ADC0 = 26;
 const uint8_t PIN_ADC1 = 27;
 
-static enum {SM_Start, SM_Init, SM_Read} state_sm_read_adc;
+enum SM_ADC_State {SM_Start, SM_Init, SM_Read};
+
+bool sm_adc_sdk_callback(struct repeating_timer *t);
+
+
+Task task_sm_adc = {
+	.state = SM_Start,
+	.period = 50,
+	.sdk_callback = sm_adc_sdk_callback
+};
+
 
 inline static void init_adc();
 inline static void read_adc();
 
 
-TaskState tick_sm_read_adc(TaskState state) {
-	switch (state) {
+bool sm_adc_sdk_callback(struct repeating_timer *t) {
+	Task *task = t->user_data;
+	
+	switch (task->state) {
 		case SM_Start:
-			state = SM_Init;
+			task->state = SM_Init;
 			break;
 		case SM_Init:
-			state = SM_Read;
+			task->state = SM_Read;
 			break;
 		case SM_Read:
-			state = SM_Read;
+			task->state = SM_Read;
 			break;
 		default:
-			state = SM_Start;
+			task->state = SM_Start;
 			break;
 	}
 	
-	switch (state) {
+	switch (task->state) {
 		case SM_Start:
 			break;
 		case SM_Init:
@@ -42,7 +54,8 @@ TaskState tick_sm_read_adc(TaskState state) {
 			break;
 	}
 	
-	return state;
+	// Continue repeating
+	return true;
 }
 
 
@@ -56,5 +69,5 @@ inline static void init_adc() {
 
 
 inline static void read_adc() {
-	adc_read();
+	printf("%d\n", adc_read());
 }
