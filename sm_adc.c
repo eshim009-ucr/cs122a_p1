@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include "hardware/adc.h"
 #include "task.h"
 #include "sm_adc.h"
 
