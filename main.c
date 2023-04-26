@@ -17,11 +17,16 @@ int main() {
 	schedule_task(&task_sm_adc);
 	
 	while (true) {
-		send_pixel(&RED);
+		for (uint i = 0; i < 4; ++i)
+			send_pixel(&RED);
 		sleep_ms(250);
-		send_pixel(&GREEN);
+		
+		for (uint i = 0; i < 4; ++i)
+			send_pixel(&GREEN);
 		sleep_ms(250);
-		send_pixel(&BLUE);
+		
+		for (uint i = 0; i < 4; ++i)
+			send_pixel(&BLUE);
 		sleep_ms(250);
 	}
 	
