@@ -3,11 +3,11 @@
 #include "pico/stdlib.h"
 
 
-typedef int TaskState;
+typedef uint TaskState;
 // Based on zyBooks example
 typedef struct _Task {
-	int state;
-	unsigned int period;
+	TaskState state;
+	uint period;
 	// A scheduling struct provided by the Pico SDK
 	struct repeating_timer sdk_timer;
 	// The callback function defined by the Pico SDK
