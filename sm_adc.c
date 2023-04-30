@@ -4,13 +4,30 @@
 #include "sm_adc.h"
 
 
-const uint8_t PIN_ADC0 = 26;
-const uint8_t PIN_ADC1 = 27;
+const uint PIN_ADC0 = 26;
+const uint PIN_ADC1 = 27;
+// The number of state machine ticks to wait before registering another step
+// Real world time depends on state machine period
+const uint TICKS_COOLDOWN = 10;
+// The reading default reading of the ADC when not detecting anything
+// The current design biases it to half of VCC
+// A 12-bit DC biased ADC will sit at 2^11 = 2048
+const uint ADC_BIAS = 1 << 11;
+// The minimum difference from a normal (no step) reading to indicate a step
+const uint TRIGGER_THRESHOLD = 200;
 
-enum SM_ADC_State {SM_Start, SM_Init, SM_Read};
+enum SM_ADC_State {
+	// Initial state, return to in event of undefined state
+	SM_Start,
+	// Initialize ADC peripheral
+	SM_Init,
+	// Read from the ADC to see if a step has ocurred
+	SM_Read,
+	// "Debounce" step input
+	SM_Cooldown
+};
 
 bool sm_adc_sdk_callback(struct repeating_timer *t);
-
 
 Task task_sm_adc = {
 	.state = SM_Start,
@@ -19,8 +36,12 @@ Task task_sm_adc = {
 };
 
 
-inline static void init_adc();
-inline static void read_adc();
+bool step_detected = false;
+// Equivalent to step_detected
+// Hold a separate private copy to use for the next transistion
+// Otherwise there is a race condition with the task that clears this value
+static bool step_transition = false;
+static uint cooldown = 0;
 
 
 bool sm_adc_sdk_callback(struct repeating_timer *t) {
@@ -34,8 +55,18 @@ bool sm_adc_sdk_callback(struct repeating_timer *t) {
 			task->state = SM_Read;
 			break;
 		case SM_Read:
-			task->state = SM_Read;
+			if (step_transition) {
+				task->state = SM_Cooldown;
+			} else {
+				task->state = SM_Read;
+			}
 			break;
+		case SM_Cooldown:
+			if (cooldown == TICKS_COOLDOWN) {
+				task->state = SM_Read;
+			} else {
+				task->state = SM_Cooldown;
+			}
 		default:
 			task->state = SM_Start;
 			break;
@@ -44,30 +75,40 @@ bool sm_adc_sdk_callback(struct repeating_timer *t) {
 	switch (task->state) {
 		case SM_Start:
 			break;
+		
 		case SM_Init:
-			init_adc();
+			// With reference to SDK example
+			// https://github.com/raspberrypi/pico-examples/blob/master/adc/microphone_adc/microphone_adc.c
+			adc_init();
+			adc_gpio_init(PIN_ADC0);
+			adc_select_input(0);
 			break;
+		
 		case SM_Read:
-			read_adc();
+			uint sensor = adc_read();
+			
+			if (
+					(sensor < ADC_BIAS - TRIGGER_THRESHOLD) ||
+					(sensor > ADC_BIAS + TRIGGER_THRESHOLD)
+				) {
+				// Signal for other tasks
+				step_detected = true;
+				// Signal for internal transition
+				step_transition = true;
+				// Reset cooldown timer
+				cooldown = 0;
+			}
+			
 			break;
+		
+		case SM_Cooldown:
+			cooldown++;
+			break;
+		
 		default:
 			break;
 	}
 	
 	// Continue repeating
 	return true;
-}
-
-
-// With reference to SDK example
-// https://github.com/raspberrypi/pico-examples/blob/master/adc/microphone_adc/microphone_adc.c
-inline static void init_adc() {
-	adc_init();
-	adc_gpio_init(PIN_ADC0);
-	adc_select_input(0);
-}
-
-
-inline static void read_adc() {
-	printf("%d\n", adc_read());
 }
