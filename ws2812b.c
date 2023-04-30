@@ -4,6 +4,8 @@
 #include "ws2812b.h"
 
 
+const Color BLACK = {0, 0, 0};
+const Color WHITE = {0xFF, 0xFF, 0xFF};
 const Color RED = {
 	.r = 0xFF,
 	.g = 0,
@@ -16,6 +18,21 @@ const Color GREEN = {
 };
 const Color BLUE = {
 	.r = 0,
+	.g = 0,
+	.b = 0xFF
+};
+const Color YELLOW = {
+	.r = 0xFF,
+	.g = 0xFF,
+	.b = 0
+};
+const Color CYAN = {
+	.r = 0,
+	.g = 0xFF,
+	.b = 0xFF
+};
+const Color MAGENTA = {
+	.r = 0xFF,
 	.g = 0,
 	.b = 0xFF
 };
