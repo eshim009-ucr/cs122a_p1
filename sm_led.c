@@ -59,6 +59,7 @@ bool sm_led_sdk_callback(struct repeating_timer *t) {
 			break;
 		case SM_Step:
 			send_pixel(&WHITE);
+			step_detected = false;
 			break;
 		default:
 			break;

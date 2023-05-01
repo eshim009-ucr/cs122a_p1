@@ -100,6 +100,7 @@ bool sm_adc_sdk_callback(struct repeating_timer *t) {
 			break;
 		
 		case SM_Cooldown:
+			step_transition = false;
 			cooldown++;
 			break;
 		
