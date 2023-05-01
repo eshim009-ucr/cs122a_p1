@@ -9,9 +9,8 @@ void schedule_task(Task* task) {
 		-task->period,
 		// Conatins tick function
 		task->sdk_callback,
-		// Send along the task struct as extra data
-		// Used to update SM state
-		&task,
+		// No need to send extra data
+		NULL,
 		// Store timer data for later reference
 		&task->sdk_timer
 	);

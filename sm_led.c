@@ -29,28 +29,26 @@ Task task_sm_led = {
 
 
 bool sm_led_sdk_callback(struct repeating_timer *t) {
-	Task *task = t->user_data;
-	
-	switch (task->state) {
+	switch (task_sm_led.state) {
 		case SM_Start:
-			task->state = SM_Init;
+			task_sm_led.state = SM_Init;
 			break;
 		case SM_Init:
-			task->state = SM_Wait;
+			task_sm_led.state = SM_Wait;
 			break;
 		case SM_Wait:
 			if (step_detected) {
-				task->state = SM_Step;
+				task_sm_led.state = SM_Step;
 			} else {
-				task->state = SM_Wait;
+				task_sm_led.state = SM_Wait;
 			}
 			break;
 		default:
-			task->state = SM_Start;
+			task_sm_led.state = SM_Start;
 			break;
 	}
 	
-	switch (task->state) {
+	switch (task_sm_led.state) {
 		case SM_Start:
 			break;
 		case SM_Init:

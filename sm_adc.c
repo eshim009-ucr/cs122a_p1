@@ -45,34 +45,32 @@ static uint cooldown = 0;
 
 
 bool sm_adc_sdk_callback(struct repeating_timer *t) {
-	Task *task = t->user_data;
-	
-	switch (task->state) {
+	switch (task_sm_adc.state) {
 		case SM_Start:
-			task->state = SM_Init;
+			task_sm_adc.state = SM_Init;
 			break;
 		case SM_Init:
-			task->state = SM_Read;
+			task_sm_adc.state = SM_Read;
 			break;
 		case SM_Read:
 			if (step_transition) {
-				task->state = SM_Cooldown;
+				task_sm_adc.state = SM_Cooldown;
 			} else {
-				task->state = SM_Read;
+				task_sm_adc.state = SM_Read;
 			}
 			break;
 		case SM_Cooldown:
 			if (cooldown == TICKS_COOLDOWN) {
-				task->state = SM_Read;
+				task_sm_adc.state = SM_Read;
 			} else {
-				task->state = SM_Cooldown;
+				task_sm_adc.state = SM_Cooldown;
 			}
 		default:
-			task->state = SM_Start;
+			task_sm_adc.state = SM_Start;
 			break;
 	}
 	
-	switch (task->state) {
+	switch (task_sm_adc.state) {
 		case SM_Start:
 			break;
 		
