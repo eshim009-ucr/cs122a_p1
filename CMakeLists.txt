@@ -16,6 +16,7 @@ pico_generate_pio_header(main ${CMAKE_CURRENT_LIST_DIR}/ws2812b.pio)
 target_sources(main PRIVATE
 	main.c
 	sm_adc.c
+	sm_led.c
 	task.c
 	ws2812b.c
 )

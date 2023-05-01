@@ -3,30 +3,24 @@
 #include "task.h"
 #include "ws2812b.h"
 #include "sm_adc.h"
+#include "sm_led.h"
 
 
-const uint8_t LED_STRIP_PIN = 3;
+const uint8_t LED_PIN = PICO_DEFAULT_LED_PIN;
 
 
 int main() {
 	stdio_init_all();
-	// gpio_init(LED_PIN);
-	// gpio_set_dir(LED_PIN, GPIO_OUT);
-	ws2812b_init(LED_STRIP_PIN);
+	gpio_init(LED_PIN);
+	gpio_set_dir(LED_PIN, GPIO_OUT);
 	
 	schedule_task(&task_sm_adc);
+	schedule_task(&task_sm_led);
 	
 	while (true) {
-		for (uint i = 0; i < 4; ++i)
-			send_pixel(&RED);
+		gpio_put(LED_PIN, 1);
 		sleep_ms(250);
-		
-		for (uint i = 0; i < 4; ++i)
-			send_pixel(&GREEN);
-		sleep_ms(250);
-		
-		for (uint i = 0; i < 4; ++i)
-			send_pixel(&BLUE);
+		gpio_put(LED_PIN, 0);
 		sleep_ms(250);
 	}
 	
