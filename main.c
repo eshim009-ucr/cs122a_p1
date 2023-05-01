@@ -7,16 +7,23 @@
 
 
 const uint8_t LED_PIN = PICO_DEFAULT_LED_PIN;
+const uint8_t PIN_STATUS_RED = 14;
 
 
 int main() {
 	stdio_init_all();
 	gpio_init(LED_PIN);
+	gpio_init(PIN_STATUS_RED);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
+	gpio_set_dir(PIN_STATUS_RED, GPIO_OUT);
 	
 	init_scheduler();
-	schedule_task(&task_sm_adc);
-	schedule_task(&task_sm_led);
+	if (!schedule_task(&task_sm_adc)) {
+		gpio_put(PIN_STATUS_RED, 1);
+	}
+	if (!schedule_task(&task_sm_led)) {
+		gpio_put(PIN_STATUS_RED, 1);
+	}
 	start_scheduler();
 	
 	while (true) {
