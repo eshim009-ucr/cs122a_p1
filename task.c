@@ -1,18 +1,61 @@
 #include "task.h"
 
 
+// The smallest time resolution for task period, in milliseconds
+static const uint SCHEDULER_QUANTUM = 50;
+#define NUM_TASKS 2
+static Task *tasks[NUM_TASKS];
+repeating_timer_t sdk_timer;
+
+
+bool scheduler_tick(struct repeating_timer *t);
+
+
 // Scheduling from this SDK example
 // https://github.com/raspberrypi/pico-examples/blob/master/timer/hello_timer/hello_timer.c
-void schedule_task(Task* task) {
+void init_scheduler() {
+	for (uint i = 0; i < NUM_TASKS; ++i) {
+		tasks[i] = NULL;
+	}
+	
 	add_repeating_timer_ms(
 		// Negative schedules since the last start, not the last end
-		-task->period,
+		-SCHEDULER_QUANTUM,
 		// Conatins tick function
-		task->sdk_callback,
-		// Send along the task struct as extra data
-		// Used to update SM state
-		&task,
+		scheduler_tick,
+		// Send along extra data for arguments, not needed
+		NULL,
 		// Store timer data for later reference
-		&task->sdk_timer
+		&sdk_timer
 	);
+}
+
+
+void schedule_task(Task* task) {
+	for (uint i = 0; i < NUM_TASKS; ++i) {
+		if (tasks[i] == NULL) {
+			tasks[i] = task;
+		}
+	}
+	// Not enough space :(
+	// Tasks are determined at compile time
+	// This should be checked manually
+	// TODO Add some kind of runtime error LED
+}
+
+
+// Based on example scheduler from zyBooks
+bool scheduler_tick(struct repeating_timer *t) {
+	for (uint i = 0; i < NUM_TASKS; ++i) {
+		if (tasks[i] != NULL) {
+			if (tasks[i]->since_last >= tasks[i]->period) {
+				tasks[i]->handler();
+				tasks[i]->since_last = 0;
+			}
+			tasks[i]->since_last += SCHEDULER_QUANTUM;
+		}
+	}
+	
+	// Contintue repeating
+	return true;
 }

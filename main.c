@@ -14,6 +14,7 @@ int main() {
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
 	
+	init_scheduler();
 	schedule_task(&task_sm_adc);
 	schedule_task(&task_sm_led);
 	

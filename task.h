@@ -7,15 +7,17 @@ typedef uint TaskState;
 // Based on zyBooks example
 typedef struct _Task {
 	TaskState state;
+	// The period of the task, measured in milliseconds
 	uint period;
-	// A scheduling struct provided by the Pico SDK
-	struct repeating_timer sdk_timer;
-	// The callback function defined by the Pico SDK
-	// This function as the state machine's tick function
-	repeating_timer_callback_t sdk_callback;
+	// Time elapsed since the last task tick
+	uint since_last;
+	// Handler function to be called each tick
+	void (*handler)(void);
 } Task;
 
 
+// Initialize the scheduler
+void init_scheduler();
 // Set the given task to execute using the Pico SDK
 // Uses internal struct period
 void schedule_task(Task* task);
