@@ -100,6 +100,7 @@ void sm_adc_handler(void) {
 			break;
 		
 		case SM_Cooldown:
+			step_transition = false;
 			cooldown++;
 			break;
 		

@@ -59,6 +59,7 @@ void sm_led_handler(void) {
 			break;
 		case SM_Step:
 			send_pixel(&WHITE);
+			step_detected = false;
 			break;
 		default:
 			break;
