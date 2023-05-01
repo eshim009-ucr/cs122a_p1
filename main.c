@@ -17,6 +17,7 @@ int main() {
 	init_scheduler();
 	schedule_task(&task_sm_adc);
 	schedule_task(&task_sm_led);
+	start_scheduler();
 	
 	while (true) {
 		gpio_put(LED_PIN, 1);

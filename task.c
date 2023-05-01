@@ -17,7 +17,10 @@ void init_scheduler() {
 	for (uint i = 0; i < NUM_TASKS; ++i) {
 		tasks[i] = NULL;
 	}
-	
+}
+
+
+void start_scheduler() {
 	add_repeating_timer_ms(
 		// Negative schedules since the last start, not the last end
 		-SCHEDULER_QUANTUM,
@@ -31,16 +34,20 @@ void init_scheduler() {
 }
 
 
-void schedule_task(Task* task) {
+void stop_scheduler() {
+	cancel_repeating_timer(&sdk_timer);
+}
+
+
+bool schedule_task(Task* task) {
 	for (uint i = 0; i < NUM_TASKS; ++i) {
 		if (tasks[i] == NULL) {
 			tasks[i] = task;
+			return true;
 		}
 	}
-	// Not enough space :(
-	// Tasks are determined at compile time
-	// This should be checked manually
-	// TODO Add some kind of runtime error LED
+	
+	return false;
 }
 
 

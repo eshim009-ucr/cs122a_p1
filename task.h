@@ -20,7 +20,10 @@ typedef struct _Task {
 void init_scheduler();
 // Set the given task to execute using the Pico SDK
 // Uses internal struct period
-void schedule_task(Task* task);
+// Returns true if successful
+bool schedule_task(Task* task);
+void start_scheduler();
+void stop_scheduler();
 
 
 #endif
