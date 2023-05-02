@@ -43,6 +43,9 @@ void sm_led_handler(void) {
 				task_sm_led.state = SM_Wait;
 			}
 			break;
+		case SM_Step:
+			task_sm_led.state = SM_Wait;
+			break;
 		default:
 			task_sm_led.state = SM_Start;
 			break;
