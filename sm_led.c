@@ -28,6 +28,9 @@ Task task_sm_led = {
 };
 
 
+bool step_ackd = false;
+
+
 void sm_led_handler(void) {
 	switch (task_sm_led.state) {
 		case SM_Start:
@@ -59,10 +62,13 @@ void sm_led_handler(void) {
 			break;
 		case SM_Wait:
 			send_pixel(&RED);
+			if (!step_detected) {
+				step_ackd = false;
+			}
 			break;
 		case SM_Step:
 			send_pixel(&WHITE);
-			step_detected = false;
+			step_ackd = true;
 			break;
 		default:
 			break;

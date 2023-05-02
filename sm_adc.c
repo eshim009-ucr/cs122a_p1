@@ -1,6 +1,7 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "task.h"
+#include "sm_led.h"
 #include "sm_adc.h"
 
 
@@ -37,10 +38,6 @@ Task task_sm_adc = {
 
 
 bool step_detected = false;
-// Equivalent to step_detected
-// Hold a separate private copy to use for the next transistion
-// Otherwise there is a race condition with the task that clears this value
-static bool step_transition = false;
 static uint cooldown = 0;
 
 
@@ -53,7 +50,7 @@ void sm_adc_handler(void) {
 			task_sm_adc.state = SM_Read;
 			break;
 		case SM_Read:
-			if (step_transition) {
+			if (step_detected) {
 				task_sm_adc.state = SM_Cooldown;
 			} else {
 				task_sm_adc.state = SM_Read;
@@ -92,8 +89,6 @@ void sm_adc_handler(void) {
 				) {
 				// Signal for other tasks
 				step_detected = true;
-				// Signal for internal transition
-				step_transition = true;
 				// Reset cooldown timer
 				cooldown = 0;
 			}
@@ -101,7 +96,9 @@ void sm_adc_handler(void) {
 			break;
 		
 		case SM_Cooldown:
-			step_transition = false;
+			if (step_ackd) {
+				step_detected = false;
+			}
 			cooldown++;
 			break;
 		
