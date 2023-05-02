@@ -1,6 +1,7 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "task.h"
+#include "pins.h"
 #include "sm_adc.h"
 
 
@@ -67,7 +68,10 @@ void sm_adc_handler(void) {
 			}
 			break;
 		default:
+			printf("ERROR: Fault in ADC state machine\n");
+			printf("\tstate=%d\n", task_sm_adc.state);
 			task_sm_adc.state = SM_Start;
+			gpio_put(PIN_STATUS_RED, 1);
 			break;
 	}
 	

@@ -2,6 +2,7 @@
 #include "task.h"
 #include "ws2812b.h"
 #include "sm_adc.h"
+#include "pins.h"
 #include "sm_led.h"
 
 
@@ -47,7 +48,10 @@ void sm_led_handler(void) {
 			task_sm_led.state = SM_Wait;
 			break;
 		default:
+			printf("ERROR: Fault in LED state machine\n");
+			printf("\tstate=%d\n", task_sm_led.state);
 			task_sm_led.state = SM_Start;
+			gpio_put(PIN_STATUS_RED, 1);
 			break;
 	}
 	

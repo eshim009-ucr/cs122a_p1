@@ -4,18 +4,22 @@
 #include "ws2812b.h"
 #include "sm_adc.h"
 #include "sm_led.h"
+#include "pins.h"
 
 
-const uint8_t LED_PIN = PICO_DEFAULT_LED_PIN;
-const uint8_t PIN_STATUS_RED = 14;
+const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+const uint PIN_STATUS_RED = 14;
+const uint PIN_STATUS_BLUE = 15;
 
 
 int main() {
 	stdio_init_all();
 	gpio_init(LED_PIN);
 	gpio_init(PIN_STATUS_RED);
+	gpio_init(PIN_STATUS_BLUE);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
 	gpio_set_dir(PIN_STATUS_RED, GPIO_OUT);
+	gpio_set_dir(PIN_STATUS_BLUE, GPIO_OUT);
 	
 	init_scheduler();
 	if (!schedule_task(&task_sm_adc)) {
