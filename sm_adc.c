@@ -65,6 +65,7 @@ void sm_adc_handler(void) {
 			} else {
 				task_sm_adc.state = SM_Cooldown;
 			}
+			break;
 		default:
 			task_sm_adc.state = SM_Start;
 			break;
