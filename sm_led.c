@@ -7,6 +7,7 @@
 
 
 const uint PIN_LED_STRIP = 3;
+const uint STRIP_LENGTH = 25;
 
 
 enum SM_LED_State {
@@ -62,10 +63,14 @@ void sm_led_handler(void) {
 			ws2812b_init(PIN_LED_STRIP);
 			break;
 		case SM_Wait:
-			send_pixel(&RED);
+			for (uint i = 0; i < STRIP_LENGTH; ++i) {
+				send_pixel(&RED);
+			}
 			break;
 		case SM_Step:
-			send_pixel(&WHITE);
+			for (uint i = 0; i < STRIP_LENGTH; ++i) {
+				send_pixel(&WHITE);
+			}
 			step_detected = false;
 			break;
 		default:
