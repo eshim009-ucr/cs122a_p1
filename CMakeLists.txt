@@ -19,6 +19,7 @@ target_sources(main PRIVATE
 	sm_led.c
 	sm_error.c
 	sm_color.c
+	sm_pattern.c
 	task.c
 	ws2812b.c
 )
