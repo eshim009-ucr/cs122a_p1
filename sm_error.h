@@ -2,6 +2,8 @@
 #define SM_ERROR_H
 
 
+// Initialize the error output pins
+void init_error();
 // Display a red LED to indicate an internal fault
 void show_error(const char* message);
 // Display a state machine error
