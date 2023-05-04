@@ -2,7 +2,8 @@
 #include "task.h"
 #include "ws2812b.h"
 #include "sm_adc.h"
-#include "pins.h"
+#include "sm_error.h"
+#include "sm_color.h"
 #include "sm_led.h"
 
 
@@ -49,10 +50,8 @@ void sm_led_handler(void) {
 			task_sm_led.state = SM_Wait;
 			break;
 		default:
-			printf("ERROR: Fault in LED state machine\n");
-			printf("\tstate=%d\n", task_sm_led.state);
+			show_sm_error("LED", task_sm_led.state);
 			task_sm_led.state = SM_Start;
-			gpio_put(PIN_STATUS_RED, 1);
 			break;
 	}
 	
@@ -64,12 +63,12 @@ void sm_led_handler(void) {
 			break;
 		case SM_Wait:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(&RED);
+				send_pixel(&BLACK);
 			}
 			break;
 		case SM_Step:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(&WHITE);
+				send_pixel(current_color);
 			}
 			step_detected = false;
 			break;
