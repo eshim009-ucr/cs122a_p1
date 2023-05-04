@@ -3,6 +3,7 @@
 #include "ws2812b.h"
 #include "sm_adc.h"
 #include "sm_error.h"
+#include "sm_color.h"
 #include "sm_led.h"
 
 
@@ -62,12 +63,12 @@ void sm_led_handler(void) {
 			break;
 		case SM_Wait:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(&RED);
+				send_pixel(&BLACK);
 			}
 			break;
 		case SM_Step:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(&WHITE);
+				send_pixel(current_color);
 			}
 			step_detected = false;
 			break;
