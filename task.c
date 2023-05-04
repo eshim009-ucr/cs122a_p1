@@ -3,7 +3,7 @@
 
 // The smallest time resolution for task period, in milliseconds
 static const uint SCHEDULER_QUANTUM = 50;
-#define NUM_TASKS 2
+#define NUM_TASKS 10
 static Task *tasks[NUM_TASKS];
 repeating_timer_t sdk_timer;
 

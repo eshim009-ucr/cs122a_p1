@@ -4,6 +4,7 @@
 #include "ws2812b.h"
 #include "sm_adc.h"
 #include "sm_led.h"
+#include "sm_color.h"
 #include "sm_error.h"
 
 
@@ -22,6 +23,9 @@ int main() {
 		show_error("Unable to schedule all tasks\n");
 	}
 	if (!schedule_task(&task_sm_led)) {
+		show_error("Unable to schedule all tasks\n");
+	}
+	if (!schedule_task(&task_sm_color)) {
 		show_error("Unable to schedule all tasks\n");
 	}
 	start_scheduler();
