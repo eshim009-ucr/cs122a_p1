@@ -17,6 +17,7 @@ target_sources(main PRIVATE
 	main.c
 	sm_adc.c
 	sm_led.c
+	sm_error.c
 	task.c
 	ws2812b.c
 )
