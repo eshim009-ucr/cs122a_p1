@@ -5,7 +5,7 @@
 
 
 extern Task task_sm_color;
-extern Color current_color;
+extern const Color* current_color;
 
 
 #endif

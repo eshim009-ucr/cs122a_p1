@@ -10,7 +10,6 @@
 
 const uint PIN_LED_STRIP = 3;
 const uint STRIP_LENGTH = 25;
-const uint STEP_BRIGHTNESS = 4;
 
 
 enum SM_LED_State {
@@ -30,30 +29,22 @@ void sm_led_handler(void);
 
 Task task_sm_led = {
 	.state = SM_Start,
-	.period = 200,
+	.period = 100,
 	.handler = sm_led_handler
 };
 
-uint current_brightness;
 
-void dim_color(Color* color, uint amount) {
-	if (color->r > amount) {
-		color->r -= amount;
-	} else {
-		color->r = 0;
-	}
+uint dimmer;
+
+
+Color dim_color(const Color* color) {
+	Color darkened;
 	
-	if (color->g > amount) {
-		color->g -= amount;
-	} else {
-		color->g = 0;
-	}
+	darkened.r = color->r >> dimmer;
+	darkened.g = color->g >> dimmer;
+	darkened.b = color->b >> dimmer;
 	
-	if (color->b > amount) {
-		color->b -= amount;
-	} else {
-		color->b = 0;
-	}
+	return darkened;
 }
 
 
@@ -81,11 +72,10 @@ void sm_led_handler(void) {
 			}
 			break;
 		case SM_Dim:
-			if (current_color.r == 0 &&
-				current_color.g == 0 &&
-				current_color.b == 0) {
+			if (dimmer == 8) {
 				task_sm_led.state = SM_Off;
 			}
+			break;
 		default:
 			show_sm_error("LED", task_sm_led.state);
 			task_sm_led.state = SM_Start;
@@ -105,16 +95,17 @@ void sm_led_handler(void) {
 			break;
 		case SM_On:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(&current_color);
+				send_pixel(current_color);
 			}
-			current_brightness = 255;
+			dimmer = 0;
 			step_detected = false;
 			break;
 		case SM_Dim:
+			Color tmp = dim_color(current_color);
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(&current_color);
+				send_pixel(&tmp);
 			}
-			dim_color(&current_color, STEP_BRIGHTNESS);
+			dimmer++;
 			break;
 		default:
 			break;

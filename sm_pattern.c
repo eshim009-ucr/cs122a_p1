@@ -34,9 +34,7 @@ void sm_pattern_handler(void) {
 			task_sm_pattern.state = SM_Init;
 			break;
 		case SM_Init:
-			gpio_init(PIN_BTN_PATTERN);
-			gpio_set_dir(PIN_BTN_PATTERN, GPIO_IN);
-			gpio_pull_up(PIN_BTN_PATTERN);
+			task_sm_pattern.state = SM_Pattern_Binary;
 			break;
 		case SM_Pattern_Binary:
 			if (gpio_get(PIN_BTN_PATTERN) == 0) {
