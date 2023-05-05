@@ -38,9 +38,7 @@ void sm_color_handler(void) {
 			task_sm_color.state = SM_Init;
 			break;
 		case SM_Init:
-			gpio_init(PIN_BTN_COLOR);
-			gpio_set_dir(PIN_BTN_COLOR, GPIO_IN);
-			gpio_pull_up(PIN_BTN_COLOR);
+			task_sm_color.state = SM_Color_Red;
 			break;
 		case SM_Color_Red:
 			if (gpio_get(PIN_BTN_COLOR) == 0) {
