@@ -30,11 +30,31 @@ void sm_led_handler(void);
 
 Task task_sm_led = {
 	.state = SM_Start,
-	.period = 250,
+	.period = 200,
 	.handler = sm_led_handler
 };
 
 uint current_brightness;
+
+void dim_color(Color* color, uint amount) {
+	if (color->r > amount) {
+		color->r -= amount;
+	} else {
+		color->r = 0;
+	}
+	
+	if (color->g > amount) {
+		color->g -= amount;
+	} else {
+		color->g = 0;
+	}
+	
+	if (color->b > amount) {
+		color->b -= amount;
+	} else {
+		color->b = 0;
+	}
+}
 
 
 void sm_led_handler(void) {
@@ -61,7 +81,9 @@ void sm_led_handler(void) {
 			}
 			break;
 		case SM_Dim:
-			if (current_brightness == 0) {
+			if (current_color.r == 0 &&
+				current_color.g == 0 &&
+				current_color.b == 0) {
 				task_sm_led.state = SM_Off;
 			}
 		default:
@@ -83,20 +105,16 @@ void sm_led_handler(void) {
 			break;
 		case SM_On:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(current_color);
+				send_pixel(&current_color);
 			}
 			current_brightness = 255;
 			step_detected = false;
 			break;
 		case SM_Dim:
 			for (uint i = 0; i < STRIP_LENGTH; ++i) {
-				send_pixel(current_color);
+				send_pixel(&current_color);
 			}
-			if (current_brightness > STEP_BRIGHTNESS) {
-				current_brightness -= STEP_BRIGHTNESS;
-			} else {
-				current_brightness = 0;
-			}
+			dim_color(&current_color, STEP_BRIGHTNESS);
 			break;
 		default:
 			break;

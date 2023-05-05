@@ -29,7 +29,7 @@ Task task_sm_color = {
 	.handler = sm_color_handler
 };
 
-const Color* current_color = &BLACK;
+Color current_color = {0,0,0};
 
 
 void sm_color_handler(void) {
@@ -77,16 +77,16 @@ void sm_color_handler(void) {
 			gpio_pull_up(PIN_BTN_COLOR);
 			break;
 		case SM_Color_Red:
-			current_color = &RED;
+			current_color = RED;
 			break;
 		case SM_Color_Green:
-			current_color = &GREEN;
+			current_color = GREEN;
 			break;
 		case SM_Color_Blue:
-			current_color = &BLUE;
+			current_color = BLUE;
 			break;
 		case SM_Color_White:
-			current_color = &WHITE;
+			current_color = WHITE;
 			break;
 		default:
 			break;
